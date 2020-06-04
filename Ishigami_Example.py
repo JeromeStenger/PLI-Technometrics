@@ -31,7 +31,7 @@ npoints = 10  # number of distributions sampled on the Fisher sphere
 grid_time = 100  # number of time steps
 
 index = [0, 1, 2]  # index numbering the input, vary in {0;1;2}
-delta = np.linspace(0.9, 1, 2)  # range of perturbation
+delta = [0.5]  # range of perturbation
 p_max = np.zeros([len(index), len(delta)])
 p_min = np.zeros([len(index), len(delta)])
 for k in range(len(delta)):
