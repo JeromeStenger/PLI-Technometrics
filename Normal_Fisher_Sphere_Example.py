@@ -1,10 +1,8 @@
 # plotting libraries
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib import rc
 from mpmath import *
-mp.dps = 50
-mp.pretty=True
-rc('text', usetex=True)
 
 from utils.geodesic_solver import *  # Helper functions for computing geodesics
 import openturns as ot  # Probabilistic modeling library
@@ -29,11 +27,11 @@ a = -4
 b = 4
 
 # Solver parameters
-npoints = 2 # number of distributions sampled on the Fisher sphere
+npoints = 20 # number of distributions sampled on the Fisher sphere
 grid_time = 100  # number of time steps
-ngrid = 100  # 
+ngrid = 100  # step for computing gradient of the fisher information
 
-delta = [0.5, 0.8]  # radius of the Fisher sphere
+delta = [0.5, 1]  # several radius of Fisher spheres
 paramSol = np.zeros((len(delta), npoints, 2))
 
 # Figure parameters

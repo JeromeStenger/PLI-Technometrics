@@ -30,43 +30,48 @@ q = quantile(0.95, [empirical_cdf(g, t) for t in grid], grid)
 npoints = 10  # number of distributions sampled on the Fisher sphere
 grid_time = 100  # number of time steps
 
-index = [0, 1, 2]
-delta = np.linspace(0.1, 1, 30)  # range of perturbation
+index = [0, 1, 2]  # index numbering the input, vary in {0;1;2}
+delta = np.linspace(0.9, 1, 2)  # range of perturbation
 p_max = np.zeros([len(index), len(delta)])
 p_min = np.zeros([len(index), len(delta)])
 for k in range(len(delta)):
-    for i in index:  # index numbering the input, vary in {0;1;2}
+    for j in index:
         p_hat = []
-        p = initial_speed(fi_inv(distribution[i], (mu, sigma), type="unbounded"), delta[k], npoints) 
+        p = initial_speed(fi_inv(distribution[j], (mu, sigma), type="unbounded"), delta[k], npoints) 
         p1 = [e[0] for e in p]
         p2 = [e[1] for e in p]
         paramSol = [[]]*npoints
         for i in range(npoints):
             y0 = [mu, sigma, p1[i], p2[i]]  # initial condition
             t = np.linspace(0, 1, grid_time)  # time discretization array
-            # full geodesic trajectory, the last element of this array belongs to the Fisher sphere of radius delta, 
+            # full geodesic trajectory, the last element of this array belongs to the Fisher sphere of radius delta,
             # each element is a tuple (mu, sigma)
-            sol = explicit_euler(lambda t, y: hamiltonian(y, t, distribution[i], (mu, sigma), type="unbounded"), y0, t)
+            sol = explicit_euler(lambda t, y: hamiltonian(y, t, distribution[j], (mu, sigma), type="unbounded"), y0, t)
             paramSol[i] = [sol[grid_time-1, 0], sol[grid_time-1, 1]]
             # plt.plot(sol[:, 0], sol[:, 1])  # plot the geodesic computed
-            q_delta = quantile(alpha, [ris_cdf_estimator(sample[i, :], t, distribution[i], ot.Normal(paramSol[i][0], paramSol[i][1]), g, "ot") for t in
+            q_delta = quantile(alpha, [ris_cdf_estimator(sample[j, :], t, distribution[j], ot.Normal(paramSol[i][0], paramSol[i][1]), g, "ot") for t in
                                        grid], grid)
             p_hat += [pli(q, q_delta)]
-        p_max[i, k] = np.max(p_hat)
-        p_min[i, k] = np.min(p_hat)
+        p_max[j, k] = np.max(p_hat)
+        p_min[j, k] = np.min(p_hat)
 
-        name = 'Ishigami_pmin_index_'+str(i)
+        name = 'Ishigami_pmin'
         my_df = pd.DataFrame(p_min)
         my_df.to_csv('./' + name + '.csv', index=False, header=False, sep=' ')
-        name = 'Ishigami_pmax_index_'+str(i)
+        name = 'Ishigami_pmax'
         my_df = pd.DataFrame(p_max)
         my_df.to_csv('./' + name + '.csv', index=False, header=False, sep=' ')
 
 
-# %% 
+# %%
 # =============================================================================
 # ============================ PLOT THE RESULTS ===============================
 # =============================================================================
+
+'''
+Our results are available in the folder Results/ and have been plotted with
+npoints=100 points in the Fisher sphere with radius varying in delta=np.linspace(0.1, 1, 30)
+'''
 
 # Data importation
 p_min = pd.read_csv('./Results/Ishigami_pmin.csv', header=None, sep=' ')
