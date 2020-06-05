@@ -92,10 +92,8 @@ def pli(q, q_delta):
     :param q_delta: alpha quantile of the perturbated distribution
     :return: float, value of the PLI
     """
-    if q_delta < q:
-        return q_delta / q - 1
-    else:
-        return 1 - q / q_delta
+    return q_delta / q - 1
+    
 
 
 def compute_pli(args):

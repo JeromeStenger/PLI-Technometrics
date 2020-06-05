@@ -72,6 +72,8 @@ for k in range(len(delta)):
 Our results are available in the folder Results/ and have been plotted with
 npoints=100 points in the Fisher sphere with radius varying in delta=np.linspace(0.1, 1, 30)
 '''
+index = [0, 1, 2]
+delta = np.linspace(0.1, 1, 30)
 
 # Data importation
 p_min = pd.read_csv('./Results/Ishigami_pmin.csv', header=None, sep=' ')
