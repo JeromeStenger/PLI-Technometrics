@@ -2,51 +2,64 @@ import numpy as np
 import openturns as ot
 
 
-def empirical_cdf(sample, t):
-    i = 0
-    for s in sample:
-        if s <= t:
-            i += 1
-    return i / len(sample)
+def empirical_cdf(sample, grid):
+
+    cdf = np.zeros((len(grid), len(sample)))
+
+    G = np.array([sample, ] * len(grid))
+    T = np.array([grid, ] * len(sample))
+
+    B = G <= T.transpose()
+
+    return np.sum(B, axis=1) / len(sample)
 
 
-def ris_cdf_estimator(sample, t, f, f_delta, g, dis_type="ot"):
+def ris_cdf_estimator(sample, grid, f, f_delta, g, dis_type="ot"):
     """
     RIS (Reverse Importance Sampling) estimator of the CDF of g with distribution f_delta
 
     :param sample: list of size N of values sampled with f
-    :param t: point where to evaluate CDF
+    :param grid: point where to evaluate CDF
     :param f: original distribution
     :param f_delta: perturbated distribution
     :param g: list of size N of the evaluation of the numerical model with sample
     :param dis_type: "ot" if f_delta is a Openturns distribution, "custom" if f_delta custom function
     :return: float value, CDF RIS estimator in t
     """
+
+
     if dis_type == "ot":
-        i = 0
-        # denominator = np.sum([f_delta.computePDF(x) / f.computePDF(x) for x in sample])
-        denominator = 0
-        j = 0
-        for x in sample:
-            likelihood_ratio = f_delta.computePDF(x) / f.computePDF(x)
-            if g[j] <= t:
-                i += likelihood_ratio
-            j += 1
-            denominator += likelihood_ratio
-        return i / denominator
+
+        cdf = np.zeros((len(grid), len(sample)))
+        likelihood_ratio = np.array([f_delta.computePDF(x) / f.computePDF(x) for x in sample])
+
+        G = np.array([g, ] * len(grid))
+        T = np.array([grid, ] * len(sample))
+
+        B = G <= T.transpose()
+
+        L = np.array([likelihood_ratio, ] * len(grid))
+        B = L * B
+
+        return np.sum(B, axis=1) / np.sum(likelihood_ratio)
+
+
 
     if dis_type == "custom":
-        i = 0
-        # denominator = np.sum([f_delta(x) / f.computePDF(x) for x in sample])
-        denominator = 0
-        j = 0
-        for x in sample:
-            likelihood_ratio = f_delta(x) / f.computePDF(x)
-            if g[j] <= t:
-                i += likelihood_ratio
-            j += 1
-            denominator += likelihood_ratio
-        return i / denominator
+
+        cdf = np.zeros((len(grid), len(sample)))
+        likelihood_ratio = np.array([f_delta(x) / f.computePDF(x) for x in sample])
+
+        G = np.array([g, ] * len(grid))
+        T = np.array([grid, ] * len(sample))
+
+        B = G <= T.transpose()
+
+        L = np.array([likelihood_ratio, ] * len(grid))
+        B = L * B
+
+        return np.sum(B, axis=1) / np.sum(likelihood_ratio)
+
 
 
 def rosenblatt_cdf_estimator(sample, t, f, delta, g):
@@ -79,9 +92,11 @@ def quantile(alpha, cdf, grid):
     :param grid: list of size T
     :return: float, the quantile of level alpha for the empirical CDF cdf
     """
-    for i in range(len(grid)):
-        if cdf[i] > alpha:
-            return grid[i]
+
+    assert len(grid) == len(cdf)
+
+    boolean = cdf <= alpha
+    return grid[np.sum(boolean)]
 
 
 def pli(q, q_delta):
