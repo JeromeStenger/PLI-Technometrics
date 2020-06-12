@@ -9,49 +9,6 @@ import openturns as ot
 def ishigami(x):
     return np.sin(x[0]) + 7 * np.sin(x[1]) ** 2 + 0.1 * x[2] ** 4 * np.sin(x[0])
 
-index = [0, 1, 2]
-delta = np.linspace(0.1, 1, 10)
-
-# Data importation
-p_min = pd.read_csv('./Ishigami_pmin.csv', header=None, sep=' ')
-p_min = p_min.values
-p_max = pd.read_csv('./Ishigami_pmax.csv', header=None, sep=' ')
-p_max = p_max.values
-
-# Figure parameters
-plt.rcParams['text.latex.preamble'] = [r'\usepackage{amsmath}', r'\usepackage{amssymb}']
-fig = plt.figure()
-plt.rc('text', usetex=True)
-plt.rc('font', family='serif')
-plt.rc('mathtext', fontset='cm')
-plt.rc('xtick', labelsize=10)
-plt.rc('ytick', labelsize=10)
-ax = fig.gca()
-ax.set_ylabel(r'PLI', fontsize=10, rotation=90, labelpad=10)
-ax.yaxis.set_label_position('left')
-ax.set_xlabel(r'$\delta$', fontsize=10)
-ax.spines['top'].set_visible(True)
-ax.spines['bottom'].set_visible(True)
-ax.spines['right'].set_visible(True)
-ax.spines['left'].set_visible(True)
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
-plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
-
-label = [r'$X_1$', r'$X_2$', r'$X_3$']
-color = ['g', 'r', 'b']
-linestyle = ['-', '--', ':']
-
-# Plot the results
-for i in range(len(index)):
-    plt.plot(delta, p_min[i], label=label[i], color=color[i], linestyle=linestyle[i])
-    plt.plot(delta, p_max[i], color=color[i], linestyle=linestyle[i])
-
-plt.legend()
-plt.tight_layout()
-plt.show()
-
-
 
 # Definition of the input distribution
 mu = 0
