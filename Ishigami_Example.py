@@ -66,7 +66,7 @@ for k in range(len(delta)):
         max_idx = np.argmax(p_hat)
 
         for b in range(200):
-            print(f"b = {b}")
+            # print(f"b = {b}")
 
             q_delta_min = quantile(alpha,
                 ris_cdf_estimator([sample[j, i] for i in boot[:, b]], grid, distribution[j], ot.Normal(paramSol[min_idx][0], paramSol[min_idx][1]), [g[i] for i in boot[:, b]], "ot"), grid)
@@ -145,8 +145,8 @@ ax.get_xaxis().tick_bottom()
 ax.get_yaxis().tick_left()
 plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
 
-label = [r'$X_1$', r'$X_2$', r'$X_3$']
-color = ['g', 'r', 'b']
+label = [r'$\widehat{S}^+_{N,1\delta} \ \&\ \widehat{S}^-_{N,1\delta} $', r'$\widehat{S}^+_{N,2\delta} \ \&\ \widehat{S}^-_{N,2\delta}$', r'$\widehat{S}^+_{N,3\delta} \ \&\ \widehat{S}^-_{N,3\delta}$']
+color = ['r', 'b', 'g']
 linestyle = ['-', '--', ':']
 
 # Plot the results
